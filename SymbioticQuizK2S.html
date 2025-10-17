@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symbiotic Protocol Quiz</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a better look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background */
+        }
+        .quiz-container {
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(10, 255, 10, 0.2);
+            border: 1px solid #1f2937;
+        }
+        .option-button {
+            transition: all 0.2s;
+            border-left: 5px solid transparent;
+        }
+        .option-button:not([disabled]):hover {
+            transform: translateY(-2px);
+            border-color: #34d399; /* Green-400 */
+        }
+        /* Custom X icon color */
+        .x-icon {
+            color: #fff; /* White icon */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Main Quiz Container -->
+    <div id="quiz-container" class="quiz-container bg-gray-800 p-8 rounded-xl w-full text-white">
+        
+        <!-- Header and Logo -->
+        <div class="flex items-center space-x-4 mb-8 border-b border-gray-700 pb-4">
+            <!-- Using the Symbiotic image as a placeholder/icon -->
+            <img 
+                src="https://placehold.co/60x60/34d399/0d1117?text=S" 
+                alt="Symbiotic Logo" 
+                class="w-12 h-12 rounded-lg"
+                onerror="this.onerror=null; this.src='https://placehold.co/60x60/34d399/0d1117?text=S';"
+            >
+            <h1 class="text-3xl font-extrabold text-green-400">Symbiotic Quiz</h1>
+        </div>
+
+        <!-- Question Content Area -->
+        <div id="quiz-content">
+            <!-- Content rendered by JavaScript -->
+        </div>
+
+    </div>
+    
+    <!-- Footer / Creator Information -->
+    <div class="mt-8 text-center text-gray-400 text-sm w-full max-w-sm">
+        <p class="mb-2">Created by <span class="text-green-400 font-semibold">K2S</span> for the community.</p>
+        <a 
+            href="https://x.com/WahidShah022" 
+            target="_blank" 
+            class="inline-flex items-center justify-center p-3 w-full bg-gray-700 rounded-lg text-white font-medium hover:bg-gray-600 transition duration-150"
+        >
+            <!-- X Icon SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="x-icon mr-2">
+                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.06-4.425 5.06H.338l5.77-6.57L.31 1.75h5.063l3.495 4.633L12.603.75Zm-.86 13.028h1.36L4.323 2.145H2.86Z"/>
+            </svg>
+            Follow Creator on X: @WahidShah022
+        </a>
+    </div>
+
+    <!-- Toast/Notification Area (for simple feedback) -->
+    <div id="feedback" class="fixed top-4 right-4 p-3 rounded-lg text-sm font-semibold transition-opacity duration-300 opacity-0"></div>
+
+    <script>
+        // --- QUIZ DATA ---
+        const quizData = [
+            {
+                id: 1,
+                question: "What is Symbiotic's core function?",
+                options: ["Token Swapping", "Shared Security", "Gaming Platform", "NFT Minting"],
+                answer: "Shared Security"
+            },
+            {
+                id: 2,
+                question: "What is the key benefit of Symbiotic's shared security model for new networks?",
+                options: ["Free Marketing", "Immediate Access to Economic Security", "Guaranteed High Fees", "Exclusive Hardware"],
+                answer: "Immediate Access to Economic Security"
+            },
+            {
+                id: 3,
+                question: "Which term describes the assets used as network security in Symbiotic?",
+                options: ["Collateral", "Coupons", "Bonds", "Warrants"],
+                answer: "Collateral"
+            },
+            {
+                id: 4,
+                question: "Who are the entities that maintain network infrastructure by running validators or nodes in the Symbiotic ecosystem?",
+                options: ["Stakers", "Curators", "Operators", "Resolvers"],
+                answer: "Operators"
+            },
+            {
+                id: 5,
+                question: "What mechanism is used to penalize malicious behavior by an Operator?",
+                options: ["Voting", "Slashing", "Delegating", "Upgrading"],
+                answer: "Slashing"
+            },
+            {
+                id: 6,
+                question: "What does the 'permissionless' aspect of Symbiotic primarily refer to?",
+                options: ["No fees are charged", "Anyone can participate without pre-approval", "The protocol has no code", "Only approved partners can use it"],
+                answer: "Anyone can participate without pre-approval"
+            },
+            {
+                id: 7,
+                question: "Symbiotic is described as being 'asset- and chain-agnostic' for its collateral. What does this mean?",
+                options: ["It only accepts native ETH", "It is limited to a single blockchain", "It can use diverse assets across multiple chains", "It requires specialized hardware wallets"],
+                answer: "It can use diverse assets across multiple chains"
+            },
+            {
+                id: 8,
+                question: "Which component is responsible for managing delegation strategies and approving qualified Operators?",
+                options: ["Vaults", "Curators", "Networks", "Stakers"],
+                answer: "Curators"
+            },
+            {
+                id: 9,
+                question: "How does stake delegation work in Symbiotic without transferring the actual assets?",
+                options: ["Via a Loan Agreement", "Through an Accounting System only", "By minting new tokens", "Using a Sidechain"],
+                answer: "Through an Accounting System only"
+            },
+            {
+                id: 10,
+                question: "Which component in Symbiotic holds the staked assets?",
+                options: ["Networks", "Resolvers", "Operators", "Vaults"],
+                answer: "Vaults"
+            },
+            {
+                id: 11,
+                question: "What is the main goal for Stakers providing assets to Symbiotic Vaults?",
+                options: ["To run a full node", "To earn rewards/yield", "To become a Curator", "To build a new dApp"],
+                answer: "To earn rewards/yield"
+            },
+            {
+                id: 12,
+                question: "What is a 'Resolver' in the context of the Symbiotic Protocol?",
+                options: ["A smart contract that handles reward payouts", "An entity with veto power over slashing events", "The main governance token", "A tool for code auditing"],
+                answer: "An entity with veto power over slashing events"
+            },
+            {
+                id: 13,
+                question: "Symbiotic aims to solve the 'cold start' problem for emerging blockchains. What is this problem?",
+                options: ["Lack of user interface design", "Difficulty in bootstrapping security and a validator set", "High initial gas fees", "Lack of integration with NFTs"],
+                answer: "Difficulty in bootstrapping security and a validator set"
+            },
+            {
+                id: 14,
+                question: "How does Symbiotic's architecture benefit Operators regarding infrastructure?",
+                options: ["It forces them to use only cloud services", "It centralizes all node operations", "It allows them to participate in multiple ecosystems with a single stake", "It prohibits running nodes on L2s"],
+                answer: "It allows them to participate in multiple ecosystems with a single stake"
+            },
+            {
+                id: 15,
+                question: "What is the maximum number of networks a single staked position can secure within Symbiotic?",
+                options: ["One", "Two", "Three", "Multiple (Flexible)"],
+                answer: "Multiple (Flexible)"
+            },
+            {
+                id: 16,
+                question: "When an Operator is slashed, who is the only party that can withdraw the affected assets from the Vault?",
+                options: ["The Operator themselves", "The Network that initiated the slash", "The Original Staker who deposited the funds", "The Curators"],
+                answer: "The Original Staker who deposited the funds"
+            },
+            {
+                id: 17,
+                question: "Symbiotic provides a framework for restaking. What is restaking?",
+                options: ["Spending an asset twice", "Staking an already staked asset to secure another network", "Withdrawing a staked asset immediately", "Converting a token to an NFT"],
+                answer: "Staking an already staked asset to secure another network"
+            },
+            {
+                id: 18,
+                question: "The Symbiotic Rewards repository on GitHub focuses on interfaces for Staker and Operator rewards. What are these rewards typically paid in?",
+                options: ["Symbiotic's native token (currently none)", "The Network's native token or a share of fees", "A stablecoin only", "Physical goods"],
+                answer: "The Network's native token or a share of fees"
+            },
+            {
+                id: 19,
+                question: "What type of technical framework is Symbiotic built upon?",
+                options: ["A single centralized server", "A thin coordination layer on Ethereum", "A proprietary Layer 1 blockchain", "A physical payment system"],
+                answer: "A thin coordination layer on Ethereum"
+            },
+            {
+                id: 20,
+                question: "Which of these is NOT a core participant in the Symbiotic ecosystem?",
+                options: ["Stakers", "Networks", "Auditors", "Operators"],
+                answer: "Auditors"
+            }
+        ];
+
+        // --- GLOBAL STATE ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isAnswerSubmitted = false;
+        
+        const quizContent = document.getElementById('quiz-content');
+        const feedback = document.getElementById('feedback');
+
+        // --- FUNCTIONS ---
+
+        /**
+         * Renders the current question and options.
+         */
+        function renderQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                renderResults();
+                return;
+            }
+
+            const questionData = quizData[currentQuestionIndex];
+            const totalQuestions = quizData.length;
+
+            quizContent.innerHTML = `
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-green-400 mb-2">
+                        Question ${currentQuestionIndex + 1} of ${totalQuestions}
+                    </p>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div 
+                            class="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                            style="width: ${((currentQuestionIndex) / totalQuestions) * 100}%"
+                        ></div>
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-semibold mb-8 text-gray-100">
+                    ${questionData.question}
+                </h2>
+
+                <div id="options-container" class="space-y-4">
+                    ${questionData.options.map((option, index) => `
+                        <button 
+                            id="option-${index}"
+                            data-option="${option}"
+                            onclick="handleOptionSelection(this)"
+                            class="option-button w-full p-4 bg-gray-700 text-left rounded-lg text-gray-200 border-2 border-gray-700 hover:bg-gray-600 focus:outline-none"
+                        >
+                            ${option}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <button 
+                    id="next-button"
+                    onclick="moveToNext()"
+                    class="w-full mt-8 py-3 bg-green-600 text-white font-bold rounded-full hover:bg-green-700 transition duration-300 opacity-50 cursor-not-allowed"
+                    disabled
+                >
+                    Submit Answer
+                </button>
+            `;
+            isAnswerSubmitted = false;
+        }
+
+        /**
+         * Handles the user clicking an option button.
+         */
+        function handleOptionSelection(selectedButton) {
+            if (isAnswerSubmitted) return;
+
+            // Clear previous selections
+            document.querySelectorAll('#options-container .option-button').forEach(btn => {
+                btn.classList.remove('border-green-400', 'bg-gray-600');
+            });
+
+            // Mark current selection
+            selectedButton.classList.add('border-green-400', 'bg-gray-600');
+            
+            // Enable submit button and change text
+            const nextButton = document.getElementById('next-button');
+            nextButton.removeAttribute('disabled');
+            nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            nextButton.textContent = 'Submit Answer';
+        }
+
+        /**
+         * Shows a temporary notification (toast).
+         */
+        function showFeedback(message, type = 'success') {
+            let bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            
+            feedback.textContent = message;
+            feedback.className = `fixed top-4 right-4 p-3 rounded-lg text-sm font-semibold transition-opacity duration-300 ${bgColor} text-white opacity-100`;
+
+            setTimeout(() => {
+                feedback.classList.remove('opacity-100');
+                feedback.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        /**
+         * Checks the answer and proceeds to the next step.
+         */
+        function moveToNext() {
+            if (isAnswerSubmitted) {
+                // If the answer was already submitted, this button acts as 'Next'
+                currentQuestionIndex++;
+                renderQuestion();
+                return;
+            }
+
+            const selectedButton = document.querySelector('#options-container .border-green-400');
+            if (!selectedButton) return;
+
+            isAnswerSubmitted = true;
+            const selectedOption = selectedButton.getAttribute('data-option');
+            const correctAnswer = quizData[currentQuestionIndex].answer;
+            const nextButton = document.getElementById('next-button');
+            
+            // Disable all options
+            document.querySelectorAll('#options-container .option-button').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Check correctness
+            if (selectedOption === correctAnswer) {
+                score++;
+                selectedButton.classList.add('bg-green-800', 'border-green-500');
+                showFeedback('Correct! +1 point.', 'success');
+            } else {
+                selectedButton.classList.add('bg-red-800', 'border-red-500');
+                
+                // Highlight the correct answer
+                document.querySelectorAll('#options-container .option-button').forEach(btn => {
+                    if (btn.getAttribute('data-option') === correctAnswer) {
+                        btn.classList.add('bg-green-800', 'border-green-500');
+                    }
+                });
+                showFeedback(`Incorrect. The answer was: ${correctAnswer}`, 'error');
+            }
+
+            // Update button for next step
+            nextButton.textContent = (currentQuestionIndex === quizData.length - 1) ? 'View Results' : 'Next Question';
+            nextButton.classList.remove('bg-green-600', 'hover:bg-green-700', 'opacity-50', 'cursor-not-allowed');
+            nextButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            nextButton.disabled = false;
+        }
+
+        /**
+         * Renders the final score and results.
+         */
+        function renderResults() {
+            const percentage = (score / quizData.length) * 100;
+            const message = percentage >= 75 
+                ? 'Excellent! You are a Symbiotic Protocol expert! 🌟' 
+                : 'Good effort! Time to brush up on your restaking knowledge. 🧠';
+            const color = percentage >= 75 ? 'text-green-400' : 'text-yellow-400';
+
+            quizContent.innerHTML = `
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Quiz Complete!</h2>
+                <p class="text-xl mb-2 text-gray-200">
+                    You scored: <span class="font-extrabold ${color}">${score} / ${quizData.length}</span>
+                </p>
+                <p class="text-lg font-semibold ${color} mb-8">${message}</p>
+                
+                <button 
+                    onclick="restartQuiz()"
+                    class="w-full py-3 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 transition duration-300"
+                >
+                    Restart Quiz
+                </button>
+            `;
+        }
+
+        /**
+         * Resets the quiz state and restarts.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            isAnswerSubmitted = false;
+            renderQuestion();
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = renderQuestion;
+    </script>
+
+</body>
+</html>
